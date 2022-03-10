@@ -5,7 +5,7 @@
 
 
 // 创建者类声明的工厂方法必须返回一个产品类的对象。创建者的子类通常会提供该方法的实现。
-abstract class Dialog {
+export abstract class Dialog {
 
     /** 基类中的工厂方法只是抽象 */
     abstract createButton(): Button
