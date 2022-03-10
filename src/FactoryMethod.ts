@@ -1,41 +1,48 @@
+// 工厂方法
 
-// 工厂方法是继承的一种应用，基于依赖关系，继承父类的公共部分，根据不同的用途，在子类中重写创建方法
-// 工厂方法将创建产品的代码与实际使用产品的代码分离， 从而能在不影响其他代码的情况下扩展产品创建部分代码。
-// 例如， 如果需要向应用中添加一种新产品， 你只需要开发新的创建者子类， 然后重写其工厂方法即可。
-
-
-// 创建者类声明的工厂方法必须返回一个产品类的对象。创建者的子类通常会提供该方法的实现。
-export abstract class Dialog {
+// 相比于简单工厂，核心工厂只定义了抽象接口，负责给出工厂应该实现的方法，产品的创建交给子类
+// 优点：开闭原则 - 如果需要向应用中添加一种新产品，你只需要开发新的工厂子类， 然后重写其工厂方法即可，无需修改之前的工厂类，拓展性好
+// 缺点：需要引入许多新的子类， 代码可能会因此变得更复杂。
+export abstract class ButtonFactory {
 
     /** 基类中的工厂方法只是抽象 */
-    abstract createButton(): Button
+    abstract createButton(): Button;
 
-    /** 
-    /* 请注意，创建者的主要职责并非是创建产品。其中通常会包含一些核心业务
-    /* 逻辑，这些逻辑依赖于由工厂方法返回的产品对象。子类可通过重写工厂方
-    /* 法并使其返回不同类型的产品来间接修改业务逻辑。
-    /* */
-    render() {
-        const btn = this.createButton();
-        btn.render();
+    button: Button;
+
+    // 公共方法
+    show() {
+        this.button = this.createButton();
+        this.button.render();
     }
+
+    hide() {
+        console.log(`hide ${this.button.name}`)
+    }
+
 }
 
 // 具体创建者将重写工厂方法以改变其所返回的产品类型。
-class IEDialog extends Dialog {
-    createButton(): Button {
+export class IEBtnFactory extends ButtonFactory {
+
+    createButton() {
         return new IEButton();
     }
+
 }
 
-class FirefoxDialog extends Dialog {
-    createButton(): Button {
+export class FirefoxBtnFactory extends ButtonFactory {
+
+    createButton() {
         return new FirefoxButton();
     }
+
 }
+
 
 // 产品接口中将声明所有具体产品都必须实现的操作
 interface Button {
+    name: string;
     onClick: Function;
     render: Function;
 }
@@ -43,23 +50,37 @@ interface Button {
 // 具体产品需提供产品接口的各种实现
 class IEButton implements Button {
 
-    onClick() {
+    name: string;
 
+    constructor() {
+        this.name = "IEButton";
+        console.log(`create ${this.name}`);
+    }
+
+    onClick() {
+        console.log(`click ${this.name} in IE`);
     }
 
     render() {
-        console.log("render this btn for IE");
+        console.log(`render ${this.name} in IE`);
     }
 }
 
 class FirefoxButton implements Button {
 
-    onClick() {
+    name: string;
 
+    constructor() {
+        this.name = "FirefoxButton";
+        console.log(`create ${this.name}`);
+    }
+
+    onClick() {
+        console.log(`click ${this.name} in Firefox`);
     }
 
     render() {
-        console.log("render this btn for Firefox");
+        console.log(`render ${this.name} in Firefox`);
     }
 }
 
@@ -67,23 +88,20 @@ class FirefoxButton implements Button {
 //客户端
 class Application {
 
-    dialog: Dialog;
+    button: ButtonFactory
 
     constructor(type: string) {
-        this.dialog = this.initialize(type);
-        this.dialog.render();
-    }
-
-    initialize(type: string) {
         switch (type) {
             case "IE":
-                return new IEDialog();
+                this.button = new IEBtnFactory();
+                break;
             case "Firefox":
-                return new FirefoxDialog();
-            default:
-                throw new Error('...');
+                this.button = new FirefoxBtnFactory();
+                break;
         }
+        this.button.show();
     }
+
 }
 
 new Application("IE");
