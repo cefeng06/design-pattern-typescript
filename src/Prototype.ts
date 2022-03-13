@@ -5,7 +5,7 @@
 // 方法：将复制过程委派给被克隆的对象；
 // 类比：prototype相当于DNA，clone函数相当于细胞有丝分裂的过程
 
-// 基础原型
+
 interface Prototype {
     clone(): Prototype;
 }
