@@ -53,7 +53,7 @@ interface Device {
     setChannel(id: number): void;
 }
 
-class TV {
+class TV implements Device {
 
     status: boolean = true;
     volume: number = 0;
